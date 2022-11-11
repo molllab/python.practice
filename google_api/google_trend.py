@@ -1,0 +1,2 @@
+# https://joel-helloworld.tistory.com/72
+# https://dataanalytics.tistory.com/entry/%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EA%B5%AC%EA%B8%80-%ED%8A%B8%EB%A0%8C%EB%93%9C-API-%ED%99%9C%EC%9A%A9%ED%95%B4%EB%B3%B4%EA%B8%B0
