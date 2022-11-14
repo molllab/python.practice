@@ -10,6 +10,7 @@ if True:
     # 손가락 개수 세팅
     # 리스트 맨 앞부터 [ 엄지, 검지, 중지, 약지, 새끼 ]
     data = {
+        "Zero" : [ False, False, False, False, False],
         "One" : [ True, False, False, False, False ],
         "Two" : [ True, True, False, False, False ],
         "Three" : [ True, True, True, False, False ],
@@ -42,18 +43,30 @@ mpHands=mp.solutions.hands
 my_hands = mpHands.Hands()
 mpDraw = mp.solutions.drawing_utils
 
-compareIndex = [[18,4],[6,8],[10, 12],[14,16], [18,20]]
+max_thumb_dist = -1
+
+compareIndex = [[None, None],[6,8],[10, 12],[14,16], [18,20]]
 def dist(x1, y1, x2, y2):
     return math.sqrt(math.pow(x1 - x2,2)) + math.sqrt(math.pow(y1 - y2,2))
 # 미디어파이프 손가락 마디정보 분석하는 함수
 # user_function에 함수명을 전달하면 그 함수를 실행해 줌
 def check_finger(results, user_function=None):
+    global max_thumb_dist
     if results.multi_hand_landmarks:
         for handLms in results.multi_hand_landmarks:
             for i in range(0,5):
-                dist_1 = dist(handLms.landmark[0].x, handLms.landmark[0].y, handLms.landmark[compareIndex[i][0]].x, handLms.landmark[compareIndex[i][0]].y)
-                dist_2 = dist(handLms.landmark[0].x, handLms.landmark[0].y, handLms.landmark[compareIndex[i][1]].x, handLms.landmark[compareIndex[i][1]].y)
-                open[i] = dist_1 < dist_2
+                # Hand index 거리 : 0번에서 n번까지 거리
+                if i == 0:
+                    # 엄지일 때만 다른 기준
+                    # 0~4 까지 길이
+                    cur_dist_thumb = dist(handLms.landmark[0].x, handLms.landmark[0].y, handLms.landmark[4].x, handLms.landmark[4].y)
+                    open[i] = cur_dist_thumb >= max_thumb_dist * 0.8 
+                    if max_thumb_dist < cur_dist_thumb:
+                        max_thumb_dist = cur_dist_thumb
+                else:
+                    dist_1 = dist(handLms.landmark[0].x, handLms.landmark[0].y, handLms.landmark[compareIndex[i][0]].x, handLms.landmark[compareIndex[i][0]].y)
+                    dist_2 = dist(handLms.landmark[0].x, handLms.landmark[0].y, handLms.landmark[compareIndex[i][1]].x, handLms.landmark[compareIndex[i][1]].y)
+                    open[i] = dist_1 < dist_2
             text_x = (handLms.landmark[0].x * w)
             text_y = (handLms.landmark[0].y * h)
 
@@ -78,7 +91,8 @@ def test_function(finger_info):
     # ex) 점수를 구글 스프레드시트로 전달한다던지(지하식당 별점)
     #     전등, 음악 등을 키고 끄는 것
     #####################################################################
-    print(finger_info)
+    # print(finger_info)
+    pass
 
 if __name__ == '__main__':
     cap = cv2.VideoCapture (0)
