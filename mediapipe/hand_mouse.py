@@ -59,35 +59,10 @@ def check_finger(results, user_function=None):
                 x8 = handLms.landmark[8].x
                 y8 = handLms.landmark[8].y
 
-                offset = 20
-
-                # 좌
-                if x8 > x0 and (abs(y8 - y0) < 0.2):
-                    pyautogui.move(-offset, 0)
-                    print("left %.2f" % x0, ",", "%.2f" % y0, "==>", "%.2f" % x8, ",", "%.2f" % y8)
-                # elif x8 > x0 and y8 > y0:
-                #     pyautogui.move(-offset, offset)
-                # elif x8 > x0 and y8 < y0:
-                #     pyautogui.move(-offset, -offset)
-
-                # 우
-                # elif x8 < x0 and y8 > y0:
-                #     pyautogui.move(offset, offset)
-                elif x8 < x0 and (abs(y8 - y0) < 0.2):
-                    pyautogui.move(offset, 0)
-                    print("right %.2f" % x0, ",", "%.2f" % y0, "==>", "%.2f" % x8, ",", "%.2f" % y8)
-                # elif x8 < x0 and y8 < y0:
-                #     pyautogui.move(offset, -offset)
-
-                # 상
-                elif (abs(x8 - x0) < 0.2) and y8 < y0:
-                    pyautogui.move(0, -offset)
-                    print("up %.2f" % x0, ",", "%.2f" % y0, "==>", "%.2f" % x8, ",", "%.2f" % y8)
-
-                # 하
-                elif (abs(x8 - x0) < 0.2) and y8 > y0:
-                    pyautogui.move(0, offset)
-                    print("down %.2f" % x0, ",", "%.2f" % y0, "==>", "%.2f" % x8, ",", "%.2f" % y8)
+                move_x = -100*(x8 - x0)
+                move_y = 100*(y8 - y0)
+                print(f"{move_x}, {move_y}")
+                pyautogui.move(move_x, move_y)
 
             mpDraw.draw_landmarks (img, handLms, mpHands. HAND_CONNECTIONS)
 
