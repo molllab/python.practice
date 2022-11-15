@@ -2,6 +2,8 @@
 import cv2
 import mediapipe as mp
 import math
+import socket
+import time
 
 # 제스쳐 정보 세팅
 if True:
@@ -85,6 +87,16 @@ def check_finger(results, user_function=None):
 
             mpDraw.draw_landmarks (img, handLms, mpHands. HAND_CONNECTIONS)
 
+HOST = '192.168.1.100'
+PORT = 9999
+def send_message(msg):
+    client_socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    client_socket.connect((HOST, PORT))
+    client_socket.send(msg.encode())
+    client_socket.close()
+
+prev_action = None
+time_hold = 0
 def test_function(finger_info):
     #####################################################################
     # 여기서 여러분이 새롬게 만들고 싶은 기능을 구현하면 됩니다.
@@ -92,7 +104,36 @@ def test_function(finger_info):
     #     전등, 음악 등을 키고 끄는 것
     #####################################################################
     # print(finger_info)
-    pass
+    global prev_action
+    global time_hold
+    flag = False
+
+    if prev_action == finger_info:
+        if time_hold == 0:
+            time_hold = time.time()
+    else:
+        if time_hold > 0:
+            time_hold = time.time() - time_hold
+            if time_hold >= 2:
+                print("%s : %.2f sec" % (prev_action, time_hold))
+                print(prev_action, ": ", time_hold, "sec")
+                flag = True
+        time_hold = 0
+
+    if flag:
+        print(prev_action, "->", finger_info)
+        if prev_action == "Zero" and finger_info == "One":
+            send_message("#on")
+            print("#on")
+            prev_action = None
+        elif prev_action == "One" and finger_info == "Zero":
+            send_message("#off")
+            print("#off")
+            prev_action = None
+
+        flag = False
+
+    prev_action = finger_info
 
 if __name__ == '__main__':
     cap = cv2.VideoCapture (0)
